@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Data Update</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #data-display {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Data Update</h1>
+    <div id="data-display">Current Value: 0</div>
+    <input id="data-input" type="number" placeholder="Enter new value">
+    <button id="update-button">Update</button>
+
+    <script>
+        var socket = io();
+
+        var dataDisplay = document.getElementById('data-display');
+        var dataInput = document.getElementById('data-input');
+        var updateButton = document.getElementById('update-button');
+
+        function updateDisplay(value) {
+            dataDisplay.textContent = 'Current Value: ' + value;
+        }
+
+        updateButton.addEventListener('click', function() {
+            var newValue = dataInput.value;
+            if (newValue) {
+                socket.emit('update_data', newValue);
+            }
+        });
+
+        socket.on('data_update', function(data) {
+            updateDisplay(data.value);
+        });
+
+        // Request initial data
+        socket.emit('get_data');
+    </script>
+</body>
+</html>

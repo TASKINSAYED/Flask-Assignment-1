@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Notifications</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #notifications {
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+        .notification {
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Notifications</h1>
+    <div id="notifications"></div>
+    <button id="send-update">Send Update</button>
+
+    <script>
+        var socket = io();
+
+        var notificationsDiv = document.getElementById('notifications');
+        var sendUpdateButton = document.getElementById('send-update');
+
+        function addNotification(notification) {
+            var notificationElement = document.createElement('div');
+            notificationElement.className = 'notification';
+            notificationElement.textContent = notification.message;
+            notificationsDiv.appendChild(notificationElement);
+            notificationsDiv.scrollTop = notificationsDiv.scrollHeight;
+        }
+
+        sendUpdateButton.addEventListener('click', function() {
+            fetch('/send_update');
+        });
+
+        socket.on('notification', function(notification) {
+            addNotification(notification);
+        });
+
+        socket.on('notification_list', function(notificationList) {
+            notificationList.forEach(function(notification) {
+                addNotification(notification);
+            });
+        });
+    </script>
+</body>
+</html>
